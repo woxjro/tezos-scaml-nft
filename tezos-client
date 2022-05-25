@@ -1,0 +1,22 @@
+#!/bin/sh
+
+set -eu
+
+DIR=$HOME/.tezos-handson-client
+if [ ! -d $DIR ]; then
+    echo Preparing $DIR for Tezos hands on...
+    mkdir $DIR
+    chmod og-rxw $DIR
+fi
+
+if [ ! -f $DIR/config ]; then
+    echo Warning: $DIR/config does not exist.
+    echo Please set it by ./check
+fi
+
+docker run --rm \
+       -v `pwd`:/work \
+       -v $HOME/.tezos-handson-client:/home/opam/.tezos-client \
+       -e TEZOS_CLIENT_UNSAFE_DISABLE_DISCLAIMER=y \
+       dailambda/scaml:12.3.0 \
+       /usr/bin/tezos-client "$@"

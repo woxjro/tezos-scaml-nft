@@ -1,0 +1,5 @@
+#!/bin/sh
+docker run --rm \
+  -v `pwd`:/work \
+  dailambda/scaml:12.3.0 \
+  /home/opam/.opam/4.12.1/bin/scamlc "$@"

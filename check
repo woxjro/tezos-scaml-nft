@@ -1,0 +1,41 @@
+#!/bin/sh
+
+# network_id may change depending on the network
+network=ithacanet
+network_id=NetXnHfVqm9iesp
+
+check () {
+    /bin/echo -n "Checking $1: "
+    if x=`curl -s -m 15 $1/chains/main/chain_id`; then
+	if [ "$x" != \"$network_id\" ]; then
+	    /bin/echo Strange chain_id: $x
+	else
+	    /bin/echo Ok
+	    /bin/echo Using "--endpoint $1"
+	    ./tezos-client --endpoint $1 config update
+	    /bin/echo Updated the config of ./tezos-client:
+	    ./tezos-client config show
+	    echo Ok
+	    exit 0
+	fi
+    else
+	/bin/echo Failed
+    fi
+}
+
+/bin/echo -n "Checking network connectivity inside Docker... "
+if docker run --rm dailambda/scaml:12.3.0 curl -I http://www.w3.org > /dev/null 2>&1; then
+    echo Ok
+else
+    echo Error.  Failed to access external site from Docker.
+    echo Check your configuration of Docker and network.
+    exit 1
+fi
+
+/bin/echo "Finding an accessible public Tezos RPC server..."
+check https://$network.smartpy.io https://$network.smartpy.io
+# check https://rpctest.tzbeta.net
+# check https://testnet-tezos.giganode.io -A testnet-tezos.giganode.io -P 443 -S
+
+/bin/echo "Error: None of the pubic Tezos RPC servers was accessible."
+exit 1
