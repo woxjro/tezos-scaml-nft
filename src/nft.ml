@@ -29,7 +29,12 @@ let[@entry] main param storage =
         assert (s = "mint");
 
         let mint ( (* param *) ) storage =
+          let max_mint = Nat 100 in
           let mint_count = storage.mint_count in
+
+          (* mint上限 *)
+          assert (mint_count <= max_mint);
+
           let owner_addr = Global.get_source () in
           (* mint_countにowner_addrを追加 *)
           let mint_id_to_owner' =
